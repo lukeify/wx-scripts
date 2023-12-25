@@ -4,20 +4,21 @@ mod rain_radar_location;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use crate::rain_radar_range::RainRadarRange;
+use crate::rain_radar_location::RainRadarLocation;
 use chrono::{DateTime, Utc, FixedOffset, SecondsFormat, Timelike};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let timestamp = "2023-12-24T22:37:00+13:00";
 
-    create_directory_for_image(RainRadarRange::Close, timestamp);
+    create_directory_for_image(RainRadarLocation::Otago, RainRadarRange::Close, timestamp);
 
-    let response = reqwest::get(rain_radar_url(RainRadarRange::Close, timestamp))
+    let response = reqwest::get(rain_radar_url(RainRadarLocation::Otago, RainRadarRange::Close, timestamp))
         .await?
         .bytes()
         .await?;
 
-    let mut path = directory_for_image(RainRadarRange::Close, timestamp).join(filename_for_image(timestamp));
+    let mut path = directory_for_image(RainRadarLocation::Otago, RainRadarRange::Close, timestamp).join(filename_for_image(timestamp));
     path.set_extension("gif");
 
     let mut img_file = std::fs::File::create(path)?;
@@ -32,13 +33,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 // urls
 
-fn rain_radar_url(rain_radar_range: RainRadarRange, timestamp: &str) -> String {
-    String::from(
-    "https://www.metservice.com/publicData/rainRadar/image/Otago/".to_owned() +
-        rain_radar_range.to_string().as_str() +
-        "/" +
+fn rain_radar_url(location: RainRadarLocation, range: RainRadarRange, timestamp: &str) -> String {
+    let location = location.to_string();
+    let range = range.to_string();
+
+    let url_segments = vec![
+        "https://www.metservice.com/publicData/rainRadar/image",
+        &location,
+        &range,
         timestamp
-    )
+    ];
+
+    String::from(url_segments.join("/"))
 }
 
 // timestamps and naming
@@ -66,14 +72,15 @@ fn filename_for_image(timestamp: &str) -> String {
     timestamp.replace(":", "")
 }
 
-fn directory_for_image(rain_radar_range: RainRadarRange, timestamp: &str) -> PathBuf {
+fn directory_for_image(location: RainRadarLocation, range: RainRadarRange, timestamp: &str) -> PathBuf {
     Path::new("images")
-        .join(rain_radar_range.to_string())
+        .join(location.to_string())
+        .join(range.to_string())
         .join(date_from_timestamp(timestamp))
 }
 
-fn create_directory_for_image(rain_radar_range: RainRadarRange, timestamp: &str) {
-    let dir_path = directory_for_image(rain_radar_range, timestamp);
+fn create_directory_for_image(location: RainRadarLocation, range: RainRadarRange, timestamp: &str) {
+    let dir_path = directory_for_image(location, range, timestamp);
 
     match std::fs::create_dir_all(&dir_path) {
         Ok(_) => println!("Directories created! `{}`", dir_path.display()),
