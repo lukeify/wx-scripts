@@ -9,16 +9,24 @@ use chrono::{DateTime, Utc, FixedOffset, SecondsFormat, Timelike};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let timestamp = "2023-12-24T22:37:00+13:00";
+    let timestamp = "2023-12-31T11:52:00+13:00";
 
-    create_directory_for_image(RainRadarLocation::Otago, RainRadarRange::Close, timestamp);
+    create_directory_for_image(
+        RainRadarLocation::Otago,
+        RainRadarRange::Close,
+        timestamp
+    );
 
     let response = reqwest::get(rain_radar_url(RainRadarLocation::Otago, RainRadarRange::Close, timestamp))
         .await?
         .bytes()
         .await?;
 
-    let mut path = directory_for_image(RainRadarLocation::Otago, RainRadarRange::Close, timestamp).join(filename_for_image(timestamp));
+    let mut path = directory_for_image(
+        RainRadarLocation::Otago,
+        RainRadarRange::Close,
+        timestamp
+    ).join(filename_for_image(timestamp));
     path.set_extension("gif");
 
     let mut img_file = std::fs::File::create(path)?;
