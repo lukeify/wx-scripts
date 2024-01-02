@@ -7,7 +7,7 @@ use crate::sensors::SensorTrait;
 pub struct RainRadar {}
 
 impl SensorTrait for RainRadar {
-    fn monitor() {
+    fn monitor(&self) {
         match fetch_rain_radar_image() {
             Ok(_) => println!("Ok!"),
             Err(_) => println!("Error!")

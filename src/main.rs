@@ -9,20 +9,23 @@ use args::sensor_actions::SensorActions;
 
 fn main() {
     match &Cli::parse().resource {
-        Resource::Sensor(actions) => match_sensor_actions(actions),
+        Resource::Sensor(action) => match_sensor_action(action),
         _ => panic!("Unimplemented resource.")
     }
 }
 
-fn match_sensor_actions(actions: &SensorActions) {
-    match actions {
+/// If the CLI tool is handling a sensor action, this function will be called.
+///
+/// # Arguments
+///
+/// * `action` - The `SensorAction` that was called alongside the "sensor" command.
+fn match_sensor_action(action: &SensorActions) {
+    match action {
         SensorActions::List => {
             println!("RainRadar");
             println!("    Retrieves New Zealand rain radar imagery courtesy of MetService.")
         }
-        // TODO: Conditionally instantiate/call the monitor method for the correct sensor based on the command
-        //       line arguments provided.
-        SensorActions::Monitor => RainRadar::monitor(),
+        SensorActions::Monitor(args) => args.sensor.to_struct().monitor(),
         _ => panic!("Unimplemented action.")
     }
 }

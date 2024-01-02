@@ -1,5 +1,7 @@
 use std::fmt;
+use clap::ValueEnum;
 
+#[derive(Debug, ValueEnum, Clone)]
 pub enum Range {
     Wide,
     Close

@@ -1,7 +1,9 @@
 use std::fmt;
+use clap::ValueEnum;
 
 /// The `Debug` item for the derive attribute is necessary to use the name of the enum as a string.
-#[derive(Debug)]
+/// The `ValueEnum` item is needed because this enum is used as a command line argument.
+#[derive(Debug, ValueEnum, Clone)]
 pub enum Location {
     Auckland,
     BayOfPlenty,
