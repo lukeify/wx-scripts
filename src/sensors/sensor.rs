@@ -11,8 +11,7 @@ pub enum Sensor {
 impl Sensor {
     pub fn to_struct(&self) -> Box<dyn SensorTrait> {
         match self {
-            Sensor::RainRadar(_) => Box::new(RainRadar {}),
-            _ => panic!("Sensor has no struct information.")
+            Sensor::RainRadar(_) => Box::new(RainRadar {})
         }
     }
 }
