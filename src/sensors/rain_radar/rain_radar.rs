@@ -17,7 +17,7 @@ impl SensorTrait for RainRadar {
 
 #[tokio::main]
 async fn fetch_rain_radar_image() -> Result<(), Box<dyn std::error::Error>> {
-    let timestamp = "2023-12-31T11:52:00+13:00";
+    let timestamp = "2024-01-03T12:36:00+13:00";
 
     create_directory_for_image(
         Location::Otago,
