@@ -1,7 +1,6 @@
 mod args;
 mod sensors;
 
-use sensors::{RainRadar, SensorTrait};
 use clap::Parser;
 use args::cli::Cli;
 use args::resource::Resource;
