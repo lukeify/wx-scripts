@@ -28,7 +28,7 @@ impl fmt::Display for Location {
         match self {
             Location::BayOfPlenty => write!(f, "Bay-of-Plenty"),
             Location::NewPlymouth => write!(f, "New-Plymouth"),
-            _ => write!(f, "{:?}", self),
+            _ => write!(f, "{self:?}"),
         }
     }
 }

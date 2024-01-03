@@ -1,19 +1,19 @@
 use crate::sensors::rain_radar::{Location, RainRadarArgs, Range};
 use crate::sensors::SensorTrait;
-use chrono::{DateTime, FixedOffset, SecondsFormat, Timelike, Utc};
+use chrono::{FixedOffset, SecondsFormat, Timelike, Utc};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
 // TODO: Understand lifetimes
-pub struct RainRadar<'a> {
+pub struct RainRadarSensor<'a> {
     pub(crate) args: &'a RainRadarArgs,
 }
 
 // TODO: Understand lifetime references
-impl SensorTrait for RainRadar<'_> {
+impl SensorTrait for RainRadarSensor<'_> {
     fn monitor(&self) {
         match fetch_rain_radar_image(self.args) {
-            Ok(_) => println!("Ok!"),
+            Ok(()) => println!("Ok!"),
             Err(_) => println!("Error!"),
         }
     }
@@ -37,9 +37,7 @@ async fn fetch_rain_radar_image(args: &RainRadarArgs) -> Result<(), Box<dyn std:
     let mut img_file = std::fs::File::create(path)?;
     img_file.write_all(&response)?;
 
-    let timestamp = current_metservice_compatible_timestamp();
-
-    println!("{}", timestamp);
+    println!("{}", current_metservice_compatible_timestamp());
     Ok(())
 }
 
@@ -47,14 +45,12 @@ fn rain_radar_url(location: Location, range: Range, timestamp: &str) -> String {
     let location = location.to_string();
     let range = range.to_string();
 
-    let url_segments = vec![
+    [
         "https://www.metservice.com/publicData/rainRadar/image",
         &location,
         &range,
         timestamp,
-    ];
-
-    String::from(url_segments.join("/"))
+    ].join("/")
 }
 
 fn date_from_timestamp(timestamp: &str) -> String {
@@ -62,21 +58,17 @@ fn date_from_timestamp(timestamp: &str) -> String {
 }
 
 fn current_metservice_compatible_timestamp() -> String {
-    let converted_now: DateTime<FixedOffset> =
-        Utc::now().with_timezone(&FixedOffset::east_opt(13 * 3600).unwrap());
-
-    String::from(
-        converted_now
-            .with_second(0)
-            .unwrap()
-            .to_rfc3339_opts(SecondsFormat::Secs, true),
-    )
+    Utc::now()
+        .with_timezone(&FixedOffset::east_opt(13 * 3600).unwrap())
+        .with_second(0)
+        .unwrap()
+        .to_rfc3339_opts(SecondsFormat::Secs, true)
 }
 
 // fs handling
 
 fn filename_for_image(timestamp: &str) -> String {
-    timestamp.replace(":", "")
+    timestamp.replace(':', "")
 }
 
 fn directory_for_image(location: Location, range: Range, timestamp: &str) -> PathBuf {
@@ -90,7 +82,7 @@ fn create_directory_for_image(location: Location, range: Range, timestamp: &str)
     let dir_path = directory_for_image(location, range, timestamp);
 
     match std::fs::create_dir_all(&dir_path) {
-        Ok(_) => println!("Directories created! `{}`", dir_path.display()),
-        Err(err) => println!("Err creating directories! {}", err),
+        Ok(()) => println!("Directories created! `{}`", dir_path.display()),
+        Err(err) => println!("Err creating directories! {err}"),
     }
 }

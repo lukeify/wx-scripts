@@ -1,7 +1,7 @@
 use crate::sensors::rain_radar::{Location, Range};
 use clap::Args;
 
-/// Defines the arguments accepted by the RainRadar Sensor when monitoring is initiated.
+/// Defines the arguments accepted by the `RainRadar` `Sensor` when monitoring is initiated.
 // TODO: Understand use of `pub(crate)`
 #[derive(Clone, Debug, Args)]
 pub struct RainRadarArgs {

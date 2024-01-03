@@ -1,4 +1,4 @@
-use crate::sensors::rain_radar::RainRadar;
+use crate::sensors::rain_radar::RainRadarSensor;
 use crate::sensors::rain_radar::RainRadarArgs;
 use crate::sensors::SensorTrait;
 use clap::Subcommand;
@@ -12,7 +12,7 @@ pub enum Sensor {
 impl Sensor {
     pub fn to_struct(&self) -> Box<dyn SensorTrait + '_> {
         match self {
-            Sensor::RainRadar(args) => Box::new(RainRadar { args }),
+            Sensor::RainRadar(args) => Box::new(RainRadarSensor { args }),
         }
     }
 }
