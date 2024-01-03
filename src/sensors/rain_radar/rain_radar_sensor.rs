@@ -50,7 +50,8 @@ fn rain_radar_url(location: Location, range: Range, timestamp: &str) -> String {
         &location,
         &range,
         timestamp,
-    ].join("/")
+    ]
+    .join("/")
 }
 
 fn date_from_timestamp(timestamp: &str) -> String {

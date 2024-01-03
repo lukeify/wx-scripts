@@ -1,5 +1,5 @@
-use crate::sensors::rain_radar::RainRadarSensor;
 use crate::sensors::rain_radar::RainRadarArgs;
+use crate::sensors::rain_radar::RainRadarSensor;
 use crate::sensors::SensorTrait;
 use clap::Subcommand;
 
