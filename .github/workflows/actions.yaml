@@ -24,4 +24,4 @@ jobs:
           bins: cargo-make
           components: clippy
       - name: Lint
-        run: cargo clippy -- -D warnings
+        run: cargo clippy -- -D warnings -W clippy::pedantic
