@@ -3,7 +3,8 @@ use clap::ValueEnum;
 
 /// The `Debug` item for the derive attribute is necessary to use the name of the enum as a string.
 /// The `ValueEnum` item is needed because this enum is used as a command line argument.
-#[derive(Debug, ValueEnum, Clone)]
+/// TODO: Understand clone and copy.
+#[derive(Debug, ValueEnum, Clone, Copy)]
 pub enum Location {
     Auckland,
     BayOfPlenty,

@@ -8,10 +8,11 @@ pub enum Sensor {
     RainRadar(RainRadarArgs)
 }
 
+// TODO: Understand use of `+ '_` lifetime here.
 impl Sensor {
-    pub fn to_struct(&self) -> Box<dyn SensorTrait> {
+    pub fn to_struct(&self) -> Box<dyn SensorTrait + '_> {
         match self {
-            Sensor::RainRadar(_) => Box::new(RainRadar {})
+            Sensor::RainRadar(args) => Box::new(RainRadar { args })
         }
     }
 }

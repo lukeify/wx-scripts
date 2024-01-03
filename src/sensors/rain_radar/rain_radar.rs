@@ -1,14 +1,18 @@
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use chrono::{DateTime, FixedOffset, SecondsFormat, Timelike, Utc};
-use crate::sensors::rain_radar::{Location, Range};
+use crate::sensors::rain_radar::{Location, RainRadarArgs, Range};
 use crate::sensors::SensorTrait;
 
-pub struct RainRadar {}
+// TODO: Understand lifetimes
+pub struct RainRadar<'a> {
+    pub(crate) args: &'a RainRadarArgs
+}
 
-impl SensorTrait for RainRadar {
+// TODO: Understand lifetime references
+impl SensorTrait for RainRadar<'_> {
     fn monitor(&self) {
-        match fetch_rain_radar_image() {
+        match fetch_rain_radar_image(self.args) {
             Ok(_) => println!("Ok!"),
             Err(_) => println!("Error!")
         }
@@ -16,23 +20,23 @@ impl SensorTrait for RainRadar {
 }
 
 #[tokio::main]
-async fn fetch_rain_radar_image() -> Result<(), Box<dyn std::error::Error>> {
+async fn fetch_rain_radar_image(args: &RainRadarArgs) -> Result<(), Box<dyn std::error::Error>> {
     let timestamp = "2024-01-03T13:07:00+13:00";
 
     create_directory_for_image(
-        Location::Otago,
-        Range::Close,
+        args.location,
+        args.range,
         timestamp
     );
 
-    let response = reqwest::get(rain_radar_url(Location::Otago, Range::Close, timestamp))
+    let response = reqwest::get(rain_radar_url(args.location, args.range, timestamp))
         .await?
         .bytes()
         .await?;
 
     let mut path = directory_for_image(
-        Location::Otago,
-        Range::Close,
+        args.location,
+        args.range,
         timestamp
     ).join(filename_for_image(timestamp));
     path.set_extension("gif");
