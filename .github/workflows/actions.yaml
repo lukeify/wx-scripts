@@ -1,0 +1,27 @@
+# https://keliris.dev/articles/setup-rust-github-actions
+name: Formatting & linting
+on: pull_request
+permissions:
+  contents: read
+jobs:
+  rustfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: moonrepo/setup-rust@v1
+        with:
+          components: rustfmt
+      - name: Check formatting
+        run: cargo fmt --all --check
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: moonrepo/setup-rust@v1
+        with:
+          bins: cargo-make
+          components: clippy
+      - name: Lint
+        run: cargo clippy -- -D warnings -W clippy::pedantic

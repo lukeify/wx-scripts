@@ -1,5 +1,5 @@
-use clap::Parser;
 use crate::args::resource::Resource;
+use clap::Parser;
 
 /// Defines the entrypoint for the command line interface for the `wx-scripts` tool.
 #[derive(Parser)]
@@ -10,5 +10,5 @@ use crate::args::resource::Resource;
 pub struct Cli {
     /// The resource that is being actioned. This may be a sensor, or a product.
     #[command(subcommand)]
-    pub(crate) resource: Resource
+    pub(crate) resource: Resource,
 }

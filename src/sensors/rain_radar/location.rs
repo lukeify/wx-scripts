@@ -1,5 +1,5 @@
-use std::fmt;
 use clap::ValueEnum;
+use std::fmt;
 
 /// The `Debug` item for the derive attribute is necessary to use the name of the enum as a string.
 /// The `ValueEnum` item is needed because this enum is used as a command line argument.
@@ -15,7 +15,7 @@ pub enum Location {
     Mahia,
     Otago,
     Wellington,
-    Westland
+    Westland,
 }
 
 /// These strings match up with the URL segment that is used to retrieve the radar image for the
@@ -28,7 +28,7 @@ impl fmt::Display for Location {
         match self {
             Location::BayOfPlenty => write!(f, "Bay-of-Plenty"),
             Location::NewPlymouth => write!(f, "New-Plymouth"),
-            _ => write!(f, "{:?}", self)
+            _ => write!(f, "{self:?}"),
         }
     }
 }

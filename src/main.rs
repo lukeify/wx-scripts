@@ -1,15 +1,15 @@
 mod args;
 mod sensors;
 
-use clap::Parser;
 use args::cli::Cli;
 use args::resource::Resource;
 use args::sensor_actions::SensorActions;
+use clap::Parser;
 
 fn main() {
     match &Cli::parse().resource {
         Resource::Sensor(action) => match_sensor_action(action),
-        _ => panic!("Unimplemented resource.")
+        Resource::Product => panic!("Unimplemented resource."),
     }
 }
 
@@ -22,9 +22,9 @@ fn match_sensor_action(action: &SensorActions) {
     match action {
         SensorActions::List => {
             println!("RainRadar");
-            println!("    Retrieves New Zealand rain radar imagery courtesy of MetService.")
+            println!("    Retrieves New Zealand rain radar imagery courtesy of MetService.");
         }
         SensorActions::Monitor(args) => args.sensor.to_struct().monitor(),
-        _ => panic!("Unimplemented action.")
+        _ => panic!("Unimplemented action."),
     }
 }
