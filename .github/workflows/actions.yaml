@@ -24,4 +24,4 @@ jobs:
           bins: cargo-make
           components: clippy
       - name: Lint
-        run: cargo make lint
+        run: cargo clippy
