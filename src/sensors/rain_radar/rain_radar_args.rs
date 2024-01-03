@@ -6,8 +6,10 @@ use crate::sensors::rain_radar::{Location, Range};
 pub struct RainRadarArgs {
     /// The location of the rain radar to retrieve—this is one of ten locations in New Zealand
     /// where a radar facility is located.
+    #[arg(long)]
     location: Location,
     /// The range of the radar to retrieve. This is either "300K" or "120K", the latter being a
     /// higher resolution image of a smaller area around the radar facility.
+    #[arg(long)]
     range: Range,
 }
