@@ -1,10 +1,12 @@
 mod args;
+mod database;
 mod sensors;
 
 use args::cli::Cli;
 use args::resource::Resource;
 use args::sensor_actions::SensorActions;
 use clap::Parser;
+use crate::database::WxDatabase;
 
 fn main() {
     match &Cli::parse().resource {
@@ -19,12 +21,14 @@ fn main() {
 ///
 /// * `action` - The `SensorAction` that was called alongside the "sensor" command.
 fn match_sensor_action(action: &SensorActions) {
-    match action {
-        SensorActions::List => {
-            println!("RainRadar");
-            println!("    Retrieves New Zealand rain radar imagery courtesy of MetService.");
-        }
-        SensorActions::Monitor(args) => args.sensor.to_struct().monitor(),
-        _ => panic!("Unimplemented action."),
-    }
+    let db = WxDatabase::new();
+    db.insert_sensor("RainRadar").expect("TODO: panic message");
+    // match action {
+    //     SensorActions::List => {
+    //         println!("RainRadar");
+    //         println!("    Retrieves New Zealand rain radar imagery courtesy of MetService.");
+    //     }
+    //     SensorActions::Monitor(args) => args.sensor.to_struct().monitor(),
+    //     _ => panic!("Unimplemented action."),
+    // }
 }
