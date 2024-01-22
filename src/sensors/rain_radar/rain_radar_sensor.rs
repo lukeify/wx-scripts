@@ -1,17 +1,24 @@
 use crate::sensors::rain_radar::{Location, RainRadarArgs, Range};
-use crate::sensors::SensorTrait;
+use crate::sensors::{Sensor, SensorTrait};
 use chrono::{FixedOffset, SecondsFormat, Timelike, Utc};
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use crate::database::WxDatabase;
 
 // TODO: Understand lifetimes
 pub struct RainRadarSensor<'a> {
+    pub(crate) sensor: &'a Sensor,
     pub(crate) args: &'a RainRadarArgs,
 }
 
 // TODO: Understand lifetime references
 impl SensorTrait for RainRadarSensor<'_> {
     fn monitor(&self) {
+        let db = WxDatabase::new();
+        // TODO: Don't use unwrap so quickly.
+        db.insert_sensor(self.sensor).unwrap();
+        db.insert_sensor_arrangement(self.sensor, serde_json::to_value(self.args).unwrap()).unwrap();
+
         match fetch_rain_radar_image(self.args) {
             Ok(()) => println!("Ok!"),
             Err(_) => println!("Error!"),

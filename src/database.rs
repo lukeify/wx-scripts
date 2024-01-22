@@ -1,5 +1,6 @@
 use chrono::{DateTime, FixedOffset};
 use rusqlite::{Connection, params};
+use crate::sensors::Sensor;
 
 pub struct WxDatabase {
     cxn: Connection,
@@ -20,7 +21,7 @@ impl WxDatabase {
     /// # Arguments
     ///
     /// * `sensor_name` - The string name of the `Sensor` that is being inserted.
-    pub fn insert_sensor(&self, sensor_name: &str) -> rusqlite::Result<usize> {
+    pub fn insert_sensor(&self, sensor: &Sensor) -> rusqlite::Result<usize> {
         self.cxn.execute("
             CREATE TABLE IF NOT EXISTS sensors(\
             id INTEGER PRIMARY KEY,\
@@ -29,13 +30,13 @@ impl WxDatabase {
 
         self.cxn.execute(
             "INSERT INTO sensors (name) VALUES (?1)",
-            params![sensor_name]
+            params![sensor.to_string()]
         )
     }
 
-    pub fn get_sensor_id_by_name(&self, sensor_name: &str) -> Result<Option<u8>, rusqlite::Error> {
+    pub fn get_sensor_id(&self, sensor: &Sensor) -> Result<Option<u8>, rusqlite::Error> {
         let mut stmt = self.cxn.prepare("SELECT id FROM sensors WHERE name= ?1")?;
-        let rows = stmt.query_map([sensor_name], |row| row.get(0))?;
+        let rows = stmt.query_map([sensor.to_string()], |row| row.get(0))?;
 
         let mut sensor_ids: Vec<u8> = Vec::new();
         for id_result in rows {
@@ -45,14 +46,14 @@ impl WxDatabase {
         Ok(sensor_ids.first().cloned())
     }
 
-    pub fn insert_sensor_arrangement<T: rusqlite::ToSql>(&self, sensor_name: &str, args: T) -> Result<(), rusqlite::Error> {
+    pub fn insert_sensor_arrangement<T: rusqlite::ToSql>(&self, sensor: &Sensor, args: T) -> Result<(), rusqlite::Error> {
         self.cxn.execute("CREATE TABLE IF NOT EXISTS sensor_arrangements(\
             id INTEGER PRIMARY KEY,\
             sensor_id INTEGER NOT NULL,\
             arguments TEXT NOT NULL\
             )", ()).expect("TODO: panic message");
 
-        if let Some(sensor_id) = self.get_sensor_id_by_name(sensor_name)? {
+        if let Some(sensor_id) = self.get_sensor_id(sensor)? {
             self.cxn.execute(
                 "INSERT INTO sensor_arrangements (sensor_id, arguments) VALUES (?1, ?2)",
                 params![sensor_id, args]
@@ -63,7 +64,7 @@ impl WxDatabase {
         }
     }
 
-    pub fn insert_sensor_entry<T: rusqlite::ToSql>(&self, for_sensor: &str, timestamp: DateTime<FixedOffset>, args: T, data: T) -> rusqlite::Result<usize> {
+    pub fn insert_sensor_entry<T: rusqlite::ToSql>(&self, for_sensor: &Sensor, timestamp: DateTime<FixedOffset>, data: T) -> rusqlite::Result<usize> {
         self.cxn.execute("
             CREATE TABLE IF NOT EXISTS sensor_entries(\
             id INTEGER PRIMARY_KEY,\
@@ -73,14 +74,13 @@ impl WxDatabase {
             data TEXT NULL\
             )", ())?;
 
-        // TODO: Fetch sensor id for sensor
-        let sensor_id = 1;
-
-        // TODO: JSON serialize data
-
-        self.cxn.execute(
-            "INSERT INTO sensor_entries (a, b, c) VALUES (?1, ?2, ?3)",
-            params![sensor_id, timestamp.to_rfc3339(), data]
-        )
+        if let Some(sensor_id) = self.get_sensor_id(for_sensor)? {
+            self.cxn.execute(
+                "INSERT INTO sensor_entries (a, b, c) VALUES (?1, ?2, ?3)",
+                params![sensor_id, timestamp.to_rfc3339(), data]
+            )
+        } else {
+            Err(rusqlite::Error::QueryReturnedNoRows)
+        }
     }
 }
