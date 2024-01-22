@@ -1,3 +1,4 @@
-/target
-/images
-/.idea
+target/
+images/
+.idea/
+db/
