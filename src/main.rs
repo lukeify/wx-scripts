@@ -22,7 +22,7 @@ fn main() {
 /// * `action` - The `SensorAction` that was called alongside the "sensor" command.
 fn match_sensor_action(action: &SensorActions) {
     let db = WxDatabase::new();
-    db.insert_sensor("RainRadar").expect("TODO: panic message");
+    db.insert_sensor_arrangement("RainRadar", rusqlite::types::Null).expect("TODO: panic message");
     // match action {
     //     SensorActions::List => {
     //         println!("RainRadar");
