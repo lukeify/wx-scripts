@@ -1,17 +1,24 @@
 use crate::sensors::rain_radar::{Location, RainRadarArgs, Range};
-use crate::sensors::SensorTrait;
+use crate::sensors::{Sensor, SensorTrait};
 use chrono::{FixedOffset, SecondsFormat, Timelike, Utc};
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use crate::database::WxDatabase;
 
 // TODO: Understand lifetimes
 pub struct RainRadarSensor<'a> {
+    pub(crate) sensor: &'a Sensor,
     pub(crate) args: &'a RainRadarArgs,
 }
 
 // TODO: Understand lifetime references
 impl SensorTrait for RainRadarSensor<'_> {
     fn monitor(&self) {
+        let db = WxDatabase::new();
+        // TODO: Don't use unwrap so quickly.
+        db.insert_sensor(self.sensor).unwrap();
+        db.insert_sensor_arrangement(self.sensor, serde_json::to_value(self.args).unwrap()).unwrap();
+
         match fetch_rain_radar_image(self.args) {
             Ok(()) => println!("Ok!"),
             Err(_) => println!("Error!"),
@@ -20,7 +27,9 @@ impl SensorTrait for RainRadarSensor<'_> {
 }
 
 #[tokio::main]
-async fn fetch_rain_radar_image(args: &RainRadarArgs) -> Result<(), Box<dyn std::error::Error>> {
+async fn fetch_rain_radar_image(
+    args: &RainRadarArgs,
+) -> Result<(), Box<dyn std::error::Error>> {
     let timestamp = "2024-01-03T13:07:00+13:00";
 
     create_directory_for_image(args.location, args.range, timestamp);
@@ -58,6 +67,8 @@ fn date_from_timestamp(timestamp: &str) -> String {
     String::from(timestamp.split('T').next().unwrap())
 }
 
+// fn metservice_compatible_timestamp(minutes_before_now: u8) -> DateTime<FixedOffset> {}
+
 fn current_metservice_compatible_timestamp() -> String {
     Utc::now()
         .with_timezone(&FixedOffset::east_opt(13 * 3600).unwrap())
@@ -87,3 +98,5 @@ fn create_directory_for_image(location: Location, range: Range, timestamp: &str)
         Err(err) => println!("Err creating directories! {err}"),
     }
 }
+
+// fn most_recent_image() -> DateTime<FixedOffset> {}
