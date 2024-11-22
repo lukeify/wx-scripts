@@ -13,6 +13,14 @@ pub struct RainRadarSensor<'a> {
 
 // TODO: Understand lifetime references
 impl SensorTrait for RainRadarSensor<'_> {
+    fn get_sensor(&self) -> &Sensor {
+        self.sensor
+    }
+
+    fn get_args_as_value<T>(&self) -> &RainRadarArgs {
+        self.args
+    }
+
     fn monitor(&self) {
         let db = WxDatabase::new();
         // TODO: Don't use unwrap so quickly.
