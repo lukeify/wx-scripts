@@ -1,6 +1,3 @@
-mod rain_radar;
-mod sensor;
-mod sensor_trait;
-
-pub use sensor::Sensor;
-pub use sensor_trait::SensorTrait;
+pub mod sensor;
+pub mod rain_radar;
+pub mod sensor_trait;

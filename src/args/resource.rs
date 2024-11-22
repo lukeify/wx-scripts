@@ -1,9 +1,9 @@
-use crate::args::sensor_actions::SensorActions;
 use clap::Subcommand;
+use crate::args::sensor_actions::SensorActions;
 
-#[derive(Subcommand, Debug)]
+#[derive(Subcommand)]
 pub enum Resource {
     #[command(subcommand)]
     Sensor(SensorActions),
-    Product,
+    Product
 }

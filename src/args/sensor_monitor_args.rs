@@ -1,8 +1,7 @@
-use crate::sensors::Sensor;
 use clap::Args;
+use crate::sensors::sensor::Sensor;
 
-#[derive(Args, Debug)]
+#[derive(Args)]
 pub struct SensorMonitorArgs {
-    #[command(subcommand)]
-    pub(crate) sensor: Sensor,
+    sensor: Sensor,
 }
