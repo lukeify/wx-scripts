@@ -1,10 +1,11 @@
 use clap::ValueEnum;
 use std::fmt;
+use serde::Serialize;
 
 /// The `Debug` item for the derive attribute is necessary to use the name of the enum as a string.
 /// The `ValueEnum` item is needed because this enum is used as a command line argument.
 /// TODO: Understand clone and copy.
-#[derive(Debug, ValueEnum, Clone, Copy)]
+#[derive(Debug, ValueEnum, Clone, Copy, Serialize)]
 pub enum Location {
     Auckland,
     BayOfPlenty,

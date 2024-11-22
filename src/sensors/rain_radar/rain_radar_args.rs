@@ -1,9 +1,10 @@
 use crate::sensors::rain_radar::{Location, Range};
 use clap::Args;
+use serde::Serialize;
 
 /// Defines the arguments accepted by the `RainRadar` `Sensor` when monitoring is initiated.
 // TODO: Understand use of `pub(crate)`
-#[derive(Clone, Debug, Args)]
+#[derive(Clone, Debug, Args, Serialize)]
 pub struct RainRadarArgs {
     /// The location of the rain radar to retrieve—this is one of ten locations in New Zealand
     /// where a radar facility is located.
@@ -14,3 +15,4 @@ pub struct RainRadarArgs {
     #[arg(long)]
     pub(crate) range: Range,
 }
+

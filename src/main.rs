@@ -1,4 +1,5 @@
 mod args;
+mod database;
 mod sensors;
 
 use args::cli::Cli;

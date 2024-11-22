@@ -1,7 +1,8 @@
 use clap::ValueEnum;
 use std::fmt;
+use serde::Serialize;
 
-#[derive(Debug, ValueEnum, Clone, Copy)]
+#[derive(Debug, ValueEnum, Clone, Copy, Serialize)]
 pub enum Range {
     Wide,
     Close,
